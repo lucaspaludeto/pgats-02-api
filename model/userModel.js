@@ -1,5 +1,14 @@
 // In-memory user database
-const users = [];
+const users = [
+  {
+  "username": "lucas",
+  "password": "123",
+  "inserirSaldo": 1000,
+  "favorecidos": [
+    "karina"
+  ]
+}
+];
 
 module.exports = {
   users
