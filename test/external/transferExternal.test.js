@@ -6,8 +6,8 @@ const { expect } = require('chai');
 // Testes
 describe('TransferController', () => {
     describe('POST /transfer', () => {
-        it('Quando informo remetente e destinatário inexistentes, recebo 400', async () => {
-            // 1) Capturar o Token
+
+        beforeEach(async () => {
             const respostaLogin = await request('http://localhost:3000')
                 .post('/login')
                 .send({
@@ -15,21 +15,41 @@ describe('TransferController', () => {
                     password: '123'
                 });
 
-            const token = respostaLogin.body.token;
-            
+            token = respostaLogin.body.token;
+        });
 
-            // 2) Realizar a transferência
+        it('Quando informo remetente e destinatário inexistentes, recebo 400', async () => {
+
             const resposta = await request('http://localhost:3000')
                 .post('/transfer')
                 .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "lucas",
-                    to: "pedro",
+                    to: "karina",
                     amount: 100
                 });
 
             expect(resposta.status).to.equal(400);
             expect(resposta.body).to.have.property('error', 'Usuário não encontrado')
         });
+
+        // it('Usando Mocks: Quando informo valores válidos eu tenho sucesso com 201 CREATED', async () => {
+        //     const resposta = await request('http://localhost:3000')
+        //         .post('/transfer')
+        //         .set('Authorization', `Bearer ${token}`)
+        //         .send({
+        //             from: "lucas",
+        //             to: "karina",
+        //             value: 50
+        //         });
+
+        //     expect(resposta.status).to.equal(201);
+            
+        //     // Validação com um Fixture
+        //     const respostaEsperada = require('../fixture/respostas/quandoInformoValoresValidosEuTenhoSucessoCom201Created.json')
+        //     delete resposta.body.date;
+        //     delete respostaEsperada.date; 
+        //     expect(resposta.body).to.deep.equal(respostaEsperada);
+        // });
     });
 });
