@@ -7,11 +7,24 @@ const { expect } = require('chai');
 describe('TransferController', () => {
     describe('POST /transfer', () => {
         it('Quando informo remetente e destinatário inexistentes, recebo 400', async () => {
+            // 1) Capturar o Token
+            const respostaLogin = await request('http://localhost:3000')
+                .post('/login')
+                .send({
+                    username: 'lucas',
+                    password: '123'
+                });
+
+            const token = respostaLogin.body.token;
+            
+
+            // 2) Realizar a transferência
             const resposta = await request('http://localhost:3000')
                 .post('/transfer')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "lucas",
-                    to: "karina",
+                    to: "pedro",
                     amount: 100
                 });
 

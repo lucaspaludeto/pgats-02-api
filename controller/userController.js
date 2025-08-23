@@ -16,6 +16,7 @@ exports.register = (req, res) => {
   }
 };
 
+
 exports.login = (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -26,6 +27,23 @@ exports.login = (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(401).json({ error: err.message });
+  }
+};
+
+// Para uso interno no app.js (JWT)
+exports.loginUser = (req, res, returnUser = false) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    if (!returnUser) return res.status(400).json({ error: 'Login e senha são obrigatórios' });
+    throw new Error('Login e senha são obrigatórios');
+  }
+  try {
+    const user = userService.loginUser({ username, password });
+    if (returnUser) return user;
+    res.json(user);
+  } catch (err) {
+    if (!returnUser) return res.status(401).json({ error: err.message });
+    throw err;
   }
 };
 
