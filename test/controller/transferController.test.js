@@ -12,9 +12,23 @@ const transferService = require('../../service/transferService')
 // Testes
 describe('TransferController', () => {
     describe('POST /transfer', () => {
+
+        beforeEach(async () => {
+            const respostaLogin = await request(app)
+                .post('/login')
+                .send({
+                    username: 'lucas',
+                    password: '123'
+                });
+
+            token = respostaLogin.body.token;
+        })
+        
         it('Quando informo remetente e destinatário inexistentes, recebo 400', async () => {
+
             const resposta = await request(app)
                 .post('/transfer')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "lucas",
                     to: "karina",
@@ -32,6 +46,7 @@ describe('TransferController', () => {
 
                 const resposta = await request(app)
                 .post('/transfer')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "pedro",
                     to: "rafael",
@@ -46,25 +61,23 @@ describe('TransferController', () => {
         });
 
         it('Usando Mocks: Quando informo valores válidos eu tenho sucesso com 201 CREATED', async () => {
-            // Preparando os Dados
-            // Carregar o arquivo
-            // Preparar a forma de ignorar os campos dinâmicos
 
             //Mocar apenas a função transfer do Service
             const transferServiceMock = sinon.stub(transferService, 'transfer');
             transferServiceMock.returns({
                 from: "lucas",
                 to: "karina",
-                amount: 400,
+                amount: 50,
                 date: new Date().toISOString()
             });
 
             const resposta = await request (app)
                 .post('/transfer')
+                .set('Authorization', `Bearer ${token}`)
                 .send({
                     from: "lucas",
                     to: "karina",
-                    amount: 400
+                    amount: 50
                 });
 
             expect(resposta.status).to.equal(201);
@@ -72,13 +85,8 @@ describe('TransferController', () => {
             // Validação com um Fixture
             const respostaEsperada = require('../fixture/respostas/quandoInformoValoresValidosEuTenhoSucessoCom201Created.json');
             delete resposta.body.date;
-            delete respos
+            delete respostaEsperada.date;
             expect(resposta.body).to.deep.equal(respostaEsperada)
-
-            // Um expect para comparar a Resposta.body com a string contifa no arquivo
-            // expect(resposta.body).to.have.property('from', 'lucas')
-            // expect(resposta.body).to.have.property('to', 'karina')
-            // expect(resposta.body).to.have.property('value', '100')
 
             console.log(resposta.body)
 
