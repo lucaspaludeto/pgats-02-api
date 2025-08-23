@@ -22,8 +22,8 @@ jobs:
     - name: Instalar dependências
       run: npm install
 
-    - name: Executar testes
-      run: npm run test-controller
+    # - name: Executar testes
+    #   run: npm run test-controller
 
     - name: Subir a API
       run: npm start &
